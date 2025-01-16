@@ -36,7 +36,7 @@ import './app.css';
 
 // 		console.log(this);
 // 		return (
-// 			<div>
+// 			<>
 // 				<button onClick={this.nextYear} >{this.state.text}</button>
 // 				<h1>My name is {name}, surname- {surname}, 
 // 					age - {years}, 
@@ -47,7 +47,7 @@ import './app.css';
 // 					<span>inseart position</span>
 // 					<input type="text" onInput={(e) => this.commitInputChanges(e, 'some color')} />
 // 				</form>
-// 			</div>
+// 			</>
 // 		)
 // 	}
 // }
@@ -60,7 +60,8 @@ class App extends Component{
 				{name: 'John Smith', salary: 1800, increase: false, rise: true, id: 1},
 				{name: 'Vasya Pupkin', salary: 300, increase: true, rise: false, id: 2},
 				{name: 'Jayne Dough', salary: 5000, increase: false, rise: false, id: 3}
-			]
+			],
+			term: ''
 		}
 		this.maxId = 4;
 	}
@@ -125,10 +126,24 @@ class App extends Component{
 		}))
 	}
 
+	searchEmpl = (items, term) => {
+		if (term.length === 0) {
+			return items;
+		}
+		return items.filter(item => {
+			return item.name.indexOf(term) >-1
+		})
+	}
+
+	onUpdateSearch = (term) => {
+		this.setState({term});
+	}
 
 	render() {
+		const {data, term} = this.state;
 		const employeesTotal = this.state.data.length;
 		const employeesToBonus = this.state.data.filter(item => item.increase).length;
+		const visibleData = this.searchEmpl(data, term);
 
 		return (
 			<div className='app'>
@@ -136,18 +151,19 @@ class App extends Component{
 					employeesToBonus={employeesToBonus}/>
 
 				<div className="search-panel">
-					<SearchPanel />
+					<SearchPanel onUpdateSearch={this.onUpdateSearch}/>
 					<AppFilter/>
 				</div>
 
 				<EmployeesList 
-					data={this.state.data}
+					data={visibleData}
 					onDelete={this.deleteItem}
 					onToggleProp={this.onToggleProp}/>
 
 				<EmployeesAddForm
 					onAdd={this.addItem}/>
 			</div>
+
 			// <div className="App">
 			// 		<WhoAmI name='John' surname='Smith' link='facebook.com'/>
 			// 		<WhoAmI name='Alex' surname='Shepard' link='vk.com'/>
