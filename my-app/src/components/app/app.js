@@ -57,9 +57,9 @@ class App extends Component{
 		super(props);
 		this.state = {
 			data: [
-				{name: 'John Smith', salary: 1800, increase: false, id: 1},
-				{name: 'Vasya Pupkin', salary: 300, increase: true, id: 2},
-				{name: 'Jayne Dough', salary: 5000, increase: false, id: 3}
+				{name: 'John Smith', salary: 1800, increase: false, rise: true, id: 1},
+				{name: 'Vasya Pupkin', salary: 300, increase: true, rise: false, id: 2},
+				{name: 'Jayne Dough', salary: 5000, increase: false, rise: false, id: 3}
 			]
 		}
 		this.maxId = 4;
@@ -89,6 +89,7 @@ class App extends Component{
 			name,
 			salary,
 			increase: false,
+			rise: false,
 			id: this.maxId++
 		}
 
@@ -99,11 +100,40 @@ class App extends Component{
 			}
 		})
 	}
+	// example how to update state: complicated
+	// onToggleIncrease = (id) => {
+	// 	this.setState(({data}) => {
+	// 		const index = data.findIndex(elem => elem.id === id);
+	// 		const old = data[index];
+	// 		const newItem = {...old, increase: !old.increase};
+	// 		const newArr = [...data.slice(0, index), newItem, ...data.slice(index +1)];
+	// 		return {
+	// 			data: newArr
+	// 		}
+	// 	})
+	// }
+
+
+	onToggleProp = (id, prop) => {
+		this.setState(({data}) => ({
+			data: data.map(item => {
+				if (item.id === id) {
+					return {...item, [prop]: !item[prop]}
+				}
+				return item;
+			})
+		}))
+	}
+
 
 	render() {
+		const employeesTotal = this.state.data.length;
+		const employeesToBonus = this.state.data.filter(item => item.increase).length;
+
 		return (
 			<div className='app'>
-				<AppInfo />
+				<AppInfo employeesTotal={employeesTotal}
+					employeesToBonus={employeesToBonus}/>
 
 				<div className="search-panel">
 					<SearchPanel />
@@ -112,7 +142,8 @@ class App extends Component{
 
 				<EmployeesList 
 					data={this.state.data}
-					onDelete={this.deleteItem}/>
+					onDelete={this.deleteItem}
+					onToggleProp={this.onToggleProp}/>
 
 				<EmployeesAddForm
 					onAdd={this.addItem}/>
